@@ -1,40 +1,72 @@
-import nmap
+import socket
+
+
+COMMON_PORTS = [
+    21, 22, 23, 25, 53,
+    80, 110, 135, 139,
+    143, 443, 445,
+    3306, 3389, 5432,
+    5900, 6379, 8080
+]
+
+
+SERVICES = {
+    21: "FTP",
+    22: "SSH",
+    23: "Telnet",
+    25: "SMTP",
+    53: "DNS",
+    80: "HTTP",
+    110: "POP3",
+    135: "RPC",
+    139: "NetBIOS",
+    143: "IMAP",
+    443: "HTTPS",
+    445: "SMB",
+    3306: "MySQL",
+    3389: "RDP",
+    5432: "PostgreSQL",
+    5900: "VNC",
+    6379: "Redis",
+    8080: "HTTP-Alt"
+}
 
 
 def scan_target(target):
-    scanner = nmap.PortScanner()
-
-    scanner.scan(
-        hosts=target,
-        arguments="-Pn -T4"
-    )
 
     results = []
 
-    for host in scanner.all_hosts():
+    host = {
+        "ip": target,
+        "hostname": "",
+        "state": "up",
+        "os": "Unknown",
+        "ports": []
+    }
 
-        host_data = {
-            "ip": host,
-            "hostname": scanner[host].hostname(),
-            "state": scanner[host].state(),
-            "os": "",
-            "ports": []
-        }
+    try:
+        host["hostname"] = socket.gethostbyaddr(target)[0]
+    except:
+        host["hostname"] = "Unknown"
 
-        for protocol in scanner[host].all_protocols():
+    for port in COMMON_PORTS:
 
-            for port in sorted(scanner[host][protocol].keys()):
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(0.5)
 
-                service = scanner[host][protocol][port]["name"]
-                state = scanner[host][protocol][port]["state"]
+        result = s.connect_ex((target, port))
 
-                host_data["ports"].append({
-                    "port": port,
-                    "protocol": protocol,
-                    "service": service,
-                    "state": state
-                })
+        if result == 0:
 
-        results.append(host_data)
+            host["ports"].append({
+                "port": port,
+                "protocol": "tcp",
+                "service": SERVICES.get(port, "Unknown"),
+                "state": "open"
+            })
+
+        s.close()
+
+    results.append(host)
 
     return results
