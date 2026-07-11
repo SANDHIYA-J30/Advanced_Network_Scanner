@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Advanced Network Scanner Dashboard</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+
+        body{
+            background:#0b1220;
+            color:white;
+        }
+
+        .navbar{
+            background:#111827;
+        }
+
+        .card{
+            border:none;
+            border-radius:15px;
+            transition:.3s;
+        }
+
+        .card:hover{
+            transform:translateY(-5px);
+        }
+
+        .stat-card{
+            text-align:center;
+            padding:20px;
+            color:white;
+        }
+
+        .stat-card i{
+            font-size:35px;
+            margin-bottom:10px;
+        }
+
+        .chart-card{
+            background:white;
+            border-radius:15px;
+            padding:20px;
+        }
+
+        .table-dark{
+            border-radius:10px;
+            overflow:hidden;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<nav class="navbar navbar-dark">
+
+<div class="container">
+
+<span class="navbar-brand mb-0 h1">
+
+🛡 Advanced Network Scanner Dashboard
+
+</span>
+
+</div>
+
+</nav>
+
+<div class="container mt-4">
+
+<div class="row">
+
+<div class="col-md-3 mb-4">
+
+<div class="card bg-primary stat-card">
+
+<i class="bi bi-activity"></i>
+
+<h6>Total Scans</h6>
+
+<h2>{{ total_scans }}</h2>
+
+</div>
+
+</div>
+
+<div class="col-md-3 mb-4">
+
+<div class="card bg-success stat-card">
+
+<i class="bi bi-pc-display"></i>
+
+<h6>Hosts</h6>
+
+<h2>{{ total_hosts }}</h2>
+
+</div>
+
+</div>
+
+<div class="col-md-3 mb-4">
+
+<div class="card bg-warning stat-card">
+
+<i class="bi bi-hdd-network"></i>
+
+<h6>Open Ports</h6>
+
+<h2>{{ total_ports }}</h2>
+
+</div>
+
+</div>
+
+<div class="col-md-3 mb-4">
+
+<div class="card bg-danger stat-card">
+
+<i class="bi bi-shield-exclamation"></i>
+
+<h6>Total Vulnerabilities</h6>
+
+<h2>{{ total_vulnerabilities }}</h2>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="row">
+
+<div class="col-md-3 mb-4">
+
+<div class="card bg-dark stat-card">
+
+<h6>Critical</h6>
+
+<h2>{{ critical }}</h2>
+
+</div>
+
+</div>
+
+<div class="col-md-3 mb-4">
+
+<div class="card bg-danger stat-card">
+
+<h6>High</h6>
+
+<h2>{{ high }}</h2>
+
+</div>
+
+</div>
+
+<div class="col-md-3 mb-4">
+
+<div class="card bg-warning stat-card">
+
+<h6>Medium</h6>
+
+<h2>{{ medium }}</h2>
+
+</div>
+
+</div>
+
+<div class="col-md-3 mb-4">
+
+<div class="card bg-success stat-card">
+
+<h6>Low</h6>
+
+<h2>{{ low }}</h2>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="row">
+
+<div class="col-lg-6 mb-4">
+
+<div class="chart-card">
+
+<h5 class="text-dark">Network Statistics</h5>
+
+<canvas id="summaryChart"></canvas>
+
+</div>
+
+</div>
+
+<div class="col-lg-6 mb-4">
+
+<div class="chart-card">
+
+<h5 class="text-dark">Scan Status</h5>
+
+<canvas id="scanStatusChart"></canvas>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="row">
+
+<div class="col-lg-6 mb-4">
+
+<div class="chart-card">
+
+<h5 class="text-dark">Service Distribution</h5>
+
+<canvas id="serviceChart"></canvas>
+
+</div>
+
+</div>
+
+<div class="col-lg-6 mb-4">
+
+<div class="chart-card">
+
+<h5 class="text-dark">Vulnerability Severity</h5>
+
+<canvas id="severityChart"></canvas>
+
+</div>
+
+</div>
+
+</div>
+<!-- Recent Scans -->
+
+<div class="row">
+
+    <div class="col-lg-6 mb-4">
+
+        <div class="card">
+
+            <div class="card-header bg-primary text-white">
+                Recent Scans
+            </div>
+
+            <div class="card-body p-0">
+
+                <table class="table table-dark table-hover mb-0">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Target</th>
+                            <th>Status</th>
+                            <th>Started</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for scan in recent_scans %}
+
+                        <tr>
+
+                            <td>{{ scan.target }}</td>
+                            <td>{{ scan.status }}</td>
+                            <td>{{ scan.started_at|date:"d M Y H:i" }}</td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+
+                            <td colspan="3" class="text-center">
+                                No scans found
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+
+
+    <!-- Recent Open Ports -->
+
+    <div class="col-lg-6 mb-4">
+
+        <div class="card">
+
+            <div class="card-header bg-success text-white">
+                Recent Open Ports
+            </div>
+
+            <div class="card-body p-0">
+
+                <table class="table table-dark table-hover mb-0">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Host</th>
+                            <th>Port</th>
+                            <th>Service</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for port in recent_ports %}
+
+                        <tr>
+
+                            <td>{{ port.host.ip_address }}</td>
+                            <td>{{ port.port_number }}</td>
+                            <td>{{ port.service }}</td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+
+                            <td colspan="3" class="text-center">
+                                No ports found
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- Recent Vulnerabilities -->
+
+<div class="row">
+
+    <div class="col-12 mb-4">
+
+        <div class="card">
+
+            <div class="card-header bg-danger text-white">
+                Recent Vulnerabilities
+            </div>
+
+            <div class="card-body p-0">
+
+                <table class="table table-dark table-hover mb-0">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Host</th>
+                            <th>Vulnerability</th>
+                            <th>Severity</th>
+                            <th>CVE</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for vuln in recent_vulnerabilities %}
+
+                        <tr>
+
+                            <td>{{ vuln.host.ip_address }}</td>
+                            <td>{{ vuln.name }}</td>
+
+                            <td>
+
+                                {% if vuln.severity == "Critical" %}
+                                    <span class="badge bg-dark">Critical</span>
+
+                                {% elif vuln.severity == "High" %}
+                                    <span class="badge bg-danger">High</span>
+
+                                {% elif vuln.severity == "Medium" %}
+                                    <span class="badge bg-warning text-dark">Medium</span>
+
+                                {% else %}
+                                    <span class="badge bg-success">Low</span>
+                                {% endif %}
+
+                            </td>
+
+                            <td>{{ vuln.cve_id|default:"-" }}</td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+
+                            <td colspan="4" class="text-center">
+                                No vulnerabilities detected
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+</div>
+
+<script>
+
+// ==============================
+// Network Statistics Bar Chart
+// ==============================
+
+new Chart(document.getElementById("summaryChart"), {
+    type: "bar",
+
+    data: {
+        labels: [
+            "Scans",
+            "Hosts",
+            "Ports",
+            "Vulnerabilities"
+        ],
+
+        datasets: [{
+            label: "Network Statistics",
+
+            data: [
+                {{ total_scans }},
+                {{ total_hosts }},
+                {{ total_ports }},
+                {{ total_vulnerabilities }}
+            ]
+        }]
+    },
+
+    options: {
+        responsive: true,
+
+        plugins: {
+            legend: {
+                display: false
+            }
+        }
+    }
+});
+
+
+// ==============================
+// Scan Status Pie Chart
+// ==============================
+
+new Chart(document.getElementById("scanStatusChart"), {
+
+    type: "pie",
+
+    data: {
+
+        labels: [
+            "Completed",
+            "Failed",
+            "Running"
+        ],
+
+        datasets: [{
+            data: [
+                {{ completed }},
+                {{ failed }},
+                {{ running }}
+            ]
+        }]
+    },
+
+    options: {
+        responsive: true
+    }
+
+});
+
+
+// ==============================
+// Service Distribution Doughnut
+// ==============================
+
+new Chart(document.getElementById("serviceChart"), {
+
+    type: "doughnut",
+
+    data: {
+
+        labels: [
+
+            {% for label in service_labels %}
+            "{{ label }}",
+            {% endfor %}
+
+        ],
+
+        datasets: [{
+
+            data: [
+
+                {% for value in service_values %}
+                {{ value }},
+                {% endfor %}
+
+            ]
+
+        }]
+
+    },
+
+    options: {
+        responsive: true
+    }
+
+});
+
+
+// ==============================
+// Vulnerability Severity Chart
+// ==============================
+
+new Chart(document.getElementById("severityChart"), {
+
+    type: "bar",
+
+    data: {
+
+        labels: [
+            "Critical",
+            "High",
+            "Medium",
+            "Low"
+        ],
+
+        datasets: [{
+
+            label: "Vulnerabilities",
+
+            data: [
+                {{ critical_count }},
+                {{ high_count }},
+                {{ medium_count }},
+                {{ low_count }}
+            ]
+
+        }]
+
+    },
+
+    options: {
+
+        responsive: true,
+
+        plugins: {
+
+            legend: {
+
+                display: false
+
+            }
+
+        }
+
+    }
+
+});
+
+</script>
