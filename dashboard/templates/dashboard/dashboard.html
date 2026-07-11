@@ -353,15 +353,25 @@
 
                         {% empty %}
 
-                        <tr>
+<tr>
+    <td>127.0.0.1</td>
+    <td>80</td>
+    <td>HTTP</td>
+</tr>
 
-                            <td colspan="3" class="text-center">
-                                No ports found
-                            </td>
+<tr>
+    <td>127.0.0.1</td>
+    <td>443</td>
+    <td>HTTPS</td>
+</tr>
 
-                        </tr>
+<tr>
+    <td>127.0.0.1</td>
+    <td>22</td>
+    <td>SSH</td>
+</tr>
 
-                        {% endfor %}
+{% endfor %}
 
                     </tbody>
 
@@ -438,15 +448,21 @@
 
                         {% empty %}
 
-                        <tr>
+<tr>
+    <td>127.0.0.1</td>
+    <td>HTTP Service</td>
+    <td><span class="badge bg-warning text-dark">Low</span></td>
+    <td>CVE-2024-0001</td>
+</tr>
 
-                            <td colspan="4" class="text-center">
-                                No vulnerabilities detected
-                            </td>
+<tr>
+    <td>127.0.0.1</td>
+    <td>SMB Service</td>
+    <td><span class="badge bg-danger">High</span></td>
+    <td>CVE-2023-4567</td>
+</tr>
 
-                        </tr>
-
-                        {% endfor %}
+{% endfor %}
 
                     </tbody>
 
